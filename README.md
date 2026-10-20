@@ -196,12 +196,17 @@ When the homepage changes:
 2. Update the constants (only in `detectBlocks.ts`) to match the new markup.
 3. Run `npm test`. In development the app also shows the layout source (`live`, `cache`, `fixture`) and every skipped block with its reason at the top of the screen.
 
+### Styling
+
+The body area (from below the site header down to the footer) is styled to match adn.com's mobile layout. All values live in `theme/tokens.ts` and were measured from the live page and its stylesheet: PT Serif headlines, Lato section labels, `#232B39` text, `#CCCCCC` dividers between stories, ADN blue `#4255A0`, 16px gutters, and featured rows with the headline on the left and the image on the right. ADN's header, footer and CSS are not rendered.
+
 ### Dependencies added
 
 - `htmlparser2`: HTML parsing (the only parser dependency).
 - `@react-native-async-storage/async-storage`: layout cache (the only storage dependency).
 - `jest-expo`, `jest`, `@types/jest`: tests.
 - Expo Router and its required modules: `expo-router`, `expo-linking`, `expo-constants`, `react-native-screens`, `react-native-safe-area-context`, plus `expo-image` and `expo-status-bar`.
+- `expo-font`, `@expo-google-fonts/pt-serif`, `@expo-google-fonts/lato`: the PT Serif and Lato typefaces adn.com uses. They're bundled with the app and work in Expo Go.
 - Dev only: `tsx` (runs the inspection tool), `@types/node`, `eslint` + `eslint-config-expo`.
 
 `package.json` pins `react-dom` via `overrides` to match `react` and avoid an npm peer-dependency conflict during install.

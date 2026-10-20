@@ -4,7 +4,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { FeaturedLayoutBlock } from '../../lib/buildHomeLayout';
 import { openStory } from '../../lib/openStory';
 import type { Story } from '../../services/homepage/types';
-import { imageSizes, maxFontScale, minTapTarget, radius, spacing, typeScale } from '../../theme/tokens';
+import { divider, imageSizes, maxFontScale, minTapTarget, pageGutter, spacing, typeScale } from '../../theme/tokens';
 import { useTheme } from '../../theme/useTheme';
 import { BlockHeading } from './BlockHeading';
 import { StoryImage } from './StoryImage';
@@ -19,7 +19,6 @@ const FeaturedRow = memo(function FeaturedRow({ story }: { story: Story }) {
       accessibilityHint="Opens the story on adn.com"
       style={({ pressed }) => [styles.row, { borderBottomColor: colors.border, opacity: pressed ? 0.7 : 1 }]}
     >
-      {story.imageUrl ? <StoryImage uri={story.imageUrl} headline={story.headline} style={styles.thumb} /> : null}
       <Text
         style={[typeScale.headline, styles.headline, { color: colors.text }]}
         allowFontScaling
@@ -27,6 +26,7 @@ const FeaturedRow = memo(function FeaturedRow({ story }: { story: Story }) {
       >
         {story.headline}
       </Text>
+      {story.imageUrl ? <StoryImage uri={story.imageUrl} headline={story.headline} style={styles.image} /> : null}
     </Pressable>
   );
 });
@@ -44,18 +44,17 @@ function FeaturedBlockComponent({ block }: { block: FeaturedLayoutBlock }) {
 }
 
 const styles = StyleSheet.create({
-  container: { paddingTop: spacing.md },
+  container: { paddingHorizontal: pageGutter },
   row: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     minHeight: minTapTarget,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    paddingVertical: spacing.lg,
+    borderBottomWidth: divider.width,
     gap: spacing.md,
   },
-  thumb: { width: imageSizes.thumbnail, height: imageSizes.thumbnail, borderRadius: radius.sm },
   headline: { flex: 1 },
+  image: { width: `${imageSizes.featuredImageWidthRatio * 100}%`, aspectRatio: imageSizes.featuredAspectRatio },
 });
 
 export const FeaturedBlock = memo(FeaturedBlockComponent);

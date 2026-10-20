@@ -9,7 +9,7 @@ function BlockHeadingComponent({ title }: { title: string }) {
   return (
     <Text
       accessibilityRole="header"
-      style={[typeScale.sectionHeading, styles.heading, { color: colors.text, borderLeftColor: colors.accent }]}
+      style={[typeScale.sectionHeading, styles.heading, { color: colors.text }]}
       allowFontScaling
       maxFontSizeMultiplier={maxFontScale.headline}
     >
@@ -19,12 +19,7 @@ function BlockHeadingComponent({ title }: { title: string }) {
 }
 
 const styles = StyleSheet.create({
-  heading: {
-    marginHorizontal: spacing.lg,
-    marginBottom: spacing.sm,
-    paddingLeft: spacing.sm,
-    borderLeftWidth: 4,
-  },
+  heading: { marginBottom: spacing.sm },
 });
 
 export const BlockHeading = memo(BlockHeadingComponent);

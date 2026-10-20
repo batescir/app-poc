@@ -1,29 +1,44 @@
+/**
+ * Visual tokens matched to adn.com's mobile body styles (measured from the live page and
+ * its site stylesheet): PT Serif headlines, Lato section labels, #232B39 text, #CCCCCC
+ * story dividers, ADN dark blue #3D4460 and link blue #4255A0, 16px page gutters.
+ */
 export const palette = {
   light: {
     background: '#FFFFFF',
-    surface: '#F4F4F2',
-    text: '#111111',
-    textMuted: '#55585C',
-    border: '#DDDDDA',
-    accent: '#B5121B',
-    skeleton: '#E6E6E3',
+    surface: '#F2F5FF',
+    text: '#232B39',
+    textMuted: '#575757',
+    border: '#CCCCCC',
+    accent: '#4255A0',
+    brand: '#3D4460',
+    skeleton: '#E6E7EB',
     devBanner: '#FFF4CC',
     onAccent: '#FFFFFF',
   },
   dark: {
-    background: '#0F1012',
-    surface: '#1B1D20',
-    text: '#F2F2F0',
-    textMuted: '#A7AAAF',
-    border: '#2E3135',
-    accent: '#F0545C',
-    skeleton: '#26292D',
+    background: '#121418',
+    surface: '#1E222B',
+    text: '#ECEEF3',
+    textMuted: '#A9ADB8',
+    border: '#3A3F4B',
+    accent: '#8FA3E8',
+    brand: '#3D4460',
+    skeleton: '#262A33',
     devBanner: '#3A3215',
     onAccent: '#FFFFFF',
   },
 } as const;
 
 export type ColorTokens = { [K in keyof typeof palette.light]: string };
+
+/** Font assets loaded in app/_layout.tsx. Each weight is its own family so Android renders it. */
+export const fonts = {
+  serifRegular: 'PTSerif_400Regular',
+  serifBold: 'PTSerif_700Bold',
+  sansRegular: 'Lato_400Regular',
+  sansBold: 'Lato_700Bold',
+} as const;
 
 export const spacing = {
   xs: 4,
@@ -34,13 +49,16 @@ export const spacing = {
   xxl: 32,
 } as const;
 
+/** adn.com mobile gutter (section[role=main] padding). */
+export const pageGutter = spacing.lg;
+
 export const typeScale = {
-  heroHeadline: { fontSize: 26, lineHeight: 32, fontWeight: '700' as const },
-  sectionHeading: { fontSize: 20, lineHeight: 26, fontWeight: '800' as const },
-  headline: { fontSize: 17, lineHeight: 22, fontWeight: '600' as const },
-  cardHeadline: { fontSize: 15, lineHeight: 20, fontWeight: '600' as const },
-  body: { fontSize: 15, lineHeight: 21, fontWeight: '400' as const },
-  caption: { fontSize: 12, lineHeight: 16, fontWeight: '500' as const },
+  heroHeadline: { fontFamily: fonts.serifBold, fontSize: 22, lineHeight: 26 },
+  sectionHeading: { fontFamily: fonts.sansBold, fontSize: 18, lineHeight: 23 },
+  headline: { fontFamily: fonts.serifBold, fontSize: 18, lineHeight: 22 },
+  cardHeadline: { fontFamily: fonts.serifBold, fontSize: 16, lineHeight: 20 },
+  body: { fontFamily: fonts.sansRegular, fontSize: 15, lineHeight: 20 },
+  caption: { fontFamily: fonts.sansRegular, fontSize: 12, lineHeight: 16 },
 } as const;
 
 /** Dynamic Type cap: text grows with the system setting up to this multiplier. */
@@ -50,13 +68,17 @@ export const maxFontScale = {
   caption: 1.4,
 } as const;
 
-export const radius = { sm: 4, md: 8 } as const;
+export const radius = { sm: 0, md: 5 } as const;
 
 export const minTapTarget = 44;
 
+export const divider = { width: 1 } as const;
+
 export const imageSizes = {
   heroAspectRatio: 3 / 2,
-  thumbnail: 96,
-  cardWidth: 220,
-  cardImageHeight: 132,
+  /** Featured rows: image on the right at ~37% of the content width, as on adn.com. */
+  featuredImageWidthRatio: 0.37,
+  featuredAspectRatio: 3 / 2,
+  cardWidth: 260,
+  cardAspectRatio: 3 / 2,
 } as const;
