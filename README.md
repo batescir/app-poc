@@ -137,3 +137,76 @@ The app runs in Expo with the fixture on iOS and Android simulators. The homepag
 - Do not invent markup, story data, or URLs. If the inspection tool shows the page loads stories with JavaScript, stop at Step 1 and report it.
 - If adn.com is unreachable from your environment, stop at Step 1, leave `detectBlocks.ts` with no rules, mark it UNVERIFIED, and report that.
 - In the PR summary, list what was built, which tests pass, which detection rules are verified against the live page, and a note that fetching adn.com's homepage from a client app should be confirmed with the site owner before any release.
+
+## Setup
+
+Requires Node.js 22.13+ (or 24.3+) and npm. Built and tested with Expo SDK 58, React Native 0.88, Node 22.
+
+```bash
+npm install
+npx expo start
+```
+
+### Run on a phone with Expo Go
+
+1. Install **Expo Go** from the App Store (iOS) or Google Play (Android). It must support Expo SDK 58 (the current store version does).
+2. Put the phone and the computer on the same Wi-Fi network.
+3. In the repo root run `npm install`, then `npx expo start`.
+4. Scan the QR code printed in the terminal: on iOS with the Camera app, on Android from inside Expo Go ("Scan QR code").
+5. The homepage loads from the saved fixture (`useMockData: true`). Pull down to refresh; tap a story to open it on adn.com.
+
+If the phone cannot reach the computer (different networks, VPN, firewall), run `npx expo start --tunnel` instead and scan the new QR code.
+
+To load the live homepage instead of the fixture, set `useMockData: false` in `config/app.config.ts` and reload.
+
+### Scripts
+
+| Command | What it does |
+| --- | --- |
+| `npx expo start` | Start the Expo dev server (Metro) |
+| `npm test` | Run the Jest (`jest-expo`) test suite |
+| `npm run typecheck` | `tsc --noEmit` |
+| `npx expo lint` | ESLint (`eslint-config-expo`) |
+| `npm run inspect` | Run the inspection tool against the live homepage |
+
+### Running the inspection tool and refreshing the fixture
+
+`npm run inspect` runs `tools/inspect-homepage.ts` in Node (via `tsx`). It fetches `appConfig.homepageUrl` with `appConfig.userAgent` and:
+
+- reports whether story links are in the raw HTML (if not, it says so and exits non-zero),
+- lists each story-link pattern with counts,
+- lists the containers the story links sit in, with nearby heading text, plus a document-order outline of headings and stories,
+- overwrites `services/homepage/__fixtures__/homepage.html` with the raw HTML.
+
+Running it is how you refresh the fixture. The app imports the fixture as a string at build time (see `metro.config.js` and `tools/metro-html-transformer.js`), so restart `npx expo start` after refreshing. The parser tests derive their expected counts from the fixture, so they keep passing after a refresh as long as the detection rules still match the markup.
+
+### Updating detection rules when adn.com changes
+
+All ADN markup knowledge lives in `services/homepage/detectBlocks.ts`, as named constants at the top of the file:
+
+- `MAIN_REGION_ROLE`: only links inside `section[role="main"]` are read (skips header, nav, footer).
+- `STORY_PATH_PATTERN` / `NON_STORY_PATH_PATTERN`: what counts as a story link (dated `/YYYY/MM/DD/slug/` paths on the ADN host).
+- `BLOCK_CONTAINER_CLASS`: the chain/list containers that delimit homepage blocks.
+- `HEADING_TAG`: headings that name a section block.
+- `SUMMARY_MIN_LENGTH`: minimum paragraph length used as a story summary.
+
+When the homepage changes:
+
+1. Run `npm run inspect` and compare its output with the constants above.
+2. Update the constants (only in `detectBlocks.ts`) to match the new markup.
+3. Run `npm test`. In development the app also shows the layout source (`live`, `cache`, `fixture`) and every skipped block with its reason at the top of the screen.
+
+### Styling
+
+The body area (from below the site header down to the footer) is styled to match adn.com's mobile layout. All values live in `theme/tokens.ts` and were measured from the live page and its stylesheet: PT Serif headlines, Lato section labels, `#232B39` text, `#CCCCCC` dividers between stories, ADN blue `#4255A0`, 16px gutters, and featured rows with the headline on the left and the image on the right. ADN's header, footer and CSS are not rendered.
+
+### Dependencies added
+
+- `htmlparser2`: HTML parsing (the only parser dependency).
+- `@react-native-async-storage/async-storage`: layout cache (the only storage dependency).
+- `jest-expo`, `jest`, `@types/jest`: tests.
+- Expo Router and its required modules: `expo-router`, `expo-linking`, `expo-constants`, `react-native-screens`, `react-native-safe-area-context`, plus `expo-image` and `expo-status-bar`.
+- `expo-font`, `@expo-google-fonts/pt-serif`, `@expo-google-fonts/lato`: the PT Serif and Lato typefaces adn.com uses. They're bundled with the app and work in Expo Go.
+- Dev only: `tsx` (runs the inspection tool), `@types/node`, `eslint` + `eslint-config-expo`.
+
+`package.json` pins `react-dom` via `overrides` to match `react` and avoid an npm peer-dependency conflict during install.
